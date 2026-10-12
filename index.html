@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a2b">
+  <meta name="description" content="Інтерактивний розрахунок частки високотехнологічної продукції в загальному обсязі реалізованої промислової продукції України за Методичними рекомендаціями № 1277.">
+  <title>Оцінювання економічної безпеки · Високотехнологічна продукція</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --ink: #152238;
+      --muted: #64748b;
+      --line: #dce4ef;
+      --navy: #101a2b;
+      --blue: #3167e3;
+      --blue-dark: #2452bf;
+      --mint: #16b89a;
+      --white: #fff;
+      --shadow: 0 14px 34px rgba(18, 39, 75, .08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .hero { background: radial-gradient(circle at 80% 0%, rgba(53, 103, 227, .28), transparent 31%), linear-gradient(135deg, #101a2b 0%, #192c4a 100%); color: white; padding: 34px 22px 48px; }
+    .wrap { width: min(1200px, 100% - 36px); margin: 0 auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; color: #dce8ff; font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; }
+    .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: #47e2c2; box-shadow: 0 0 0 4px rgba(71,226,194,.13); }
+    h1 { max-width: 850px; margin: 20px 0 12px; font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1.08; letter-spacing: -.04em; }
+    .hero p { color: #c7d3e5; max-width: 770px; margin: 0; font-size: 1.03rem; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 23px; }
+    .hero-meta span { border-radius: 9px; background: rgba(255,255,255,.08); padding: 7px 10px; color: #e3ebf9; font-size: .85rem; }
+    main { padding: 28px 0 56px; }
+    .section { margin-bottom: 22px; }
+    .hidden { display: none !important; }
+    .period-grid { display:grid; grid-template-columns: 1fr 1fr auto; align-items:end; gap:14px; }
+    .field-label { display:block; font-weight:750; font-size:.85rem; color:#40516a; margin-bottom:7px; }
+    .field-control { width:100%; border:1px solid #d5deea; border-radius:10px; padding:12px 13px; background:#fff; color:var(--ink); outline:none; }
+    .field-control:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(49,103,227,.12); }
+    .step-chip { display:inline-flex; align-items:center; gap:7px; padding:6px 10px; border-radius:999px; background:#eaf1ff; color:#2754ad; font-size:.76rem; font-weight:800; white-space:nowrap; }
+    .period-error { display:none; margin-top:12px; color:#8a2424; background:#fff5f5; border:1px solid #f0b4b4; border-radius:10px; padding:10px 12px; font-size:.88rem; }
+    .period-error.show { display:block; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 0 0 13px; }
+    h2 { font-size: 1.25rem; letter-spacing: -.02em; margin: 0; }
+    .section-sub { margin: 4px 0 0; font-size: .91rem; color: var(--muted); }
+    .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; }
+    .formula-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 15px; }
+    .formula-box { background: #f5f8ff; border: 1px solid #dbe6ff; border-radius: 14px; padding: 18px; }
+    .formula-label { color: #4262a6; font-size: .77rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+    .formula { margin: 11px 0 0; font-weight: 750; font-size: clamp(1.05rem, 2vw, 1.38rem); line-height: 1.55; }
+    .fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; padding: 0 6px; }
+    .fraction span:first-child { border-bottom: 1.5px solid #263750; padding: 0 4px 3px; }
+    .fraction span:last-child { padding-top: 3px; font-size: .86em; }
+    .note { margin: 10px 0 0; color: var(--muted); font-size: .86rem; }
+    .threshold-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+    .threshold-pills span { padding: 6px 9px; background: #f0f3f8; border: 1px solid #e0e7f0; border-radius: 8px; font-size: .82rem; color: #465671; }
+    .input-card { padding: 0; overflow: hidden; }
+    .input-card-top { padding: 20px 22px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
+    .input-card-top p { margin: 4px 0 0; color: var(--muted); font-size: .9rem; max-width: 700px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .btn { border: 1px solid transparent; border-radius: 10px; padding: 10px 14px; font-weight: 700; font-size: .9rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: transform .15s ease, background .15s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--blue); color: white; box-shadow: 0 5px 13px rgba(49,103,227,.18); }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-secondary { background: white; color: #29456e; border-color: #d4deec; }
+    .btn-secondary:hover { background: #f4f7fc; }
+    .btn-quiet { background: #f2f5fa; color: #40516a; border-color: #e0e7f0; }
+    .table-scroll { overflow-x: auto; width: 100%; }
+    .input-table { width: 100%; min-width: 1080px; border-collapse: separate; border-spacing: 0; }
+    .input-table th { text-align: left; background: #f7f9fc; color: #56657b; font-size: .76rem; font-weight: 750; line-height: 1.35; padding: 13px 10px; border-bottom: 1px solid var(--line); vertical-align: bottom; }
+    .input-table td { padding: 10px; border-bottom: 1px solid #edf1f6; background: #fff; }
+    .input-table tr:last-child td { border-bottom: 0; }
+    .input-table th:first-child, .input-table td:first-child { padding-left: 22px; }
+    .input-table th:last-child, .input-table td:last-child { padding-right: 22px; }
+    .input-table input { width: 100%; min-width: 85px; padding: 9px 10px; border: 1px solid #d5deea; border-radius: 8px; outline: none; background: #fff; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .input-table input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(49,103,227,.12); }
+    .input-table input.invalid { border-color: #dc4545; background: #fff7f7; }
+    .input-table input.year-input { min-width: 75px; }
+    .remove-row { width: 34px; height: 34px; border: 1px solid #e1e7f0; border-radius: 8px; color: #8b4750; background: white; font-size: 1.1rem; }
+    .remove-row:hover { background: #fff1f2; }
+    .input-footer { border-top: 1px solid var(--line); background: #fbfcfe; padding: 14px 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 11px; }
+    .unit-note { color: var(--muted); font-size: .83rem; max-width: 690px; }
+    .error-box { display: none; margin: 15px 22px 0; border: 1px solid #f0b4b4; border-radius: 12px; background: #fff5f5; color: #8a2424; padding: 13px 15px; font-size: .9rem; }
+    .error-box.show { display: block; }
+    .error-box ul { margin: 5px 0 0; padding-left: 20px; }
+    .results-empty { padding: 35px 18px; text-align: center; color: var(--muted); }
+    .results-empty .empty-icon { width: 44px; height: 44px; margin: 0 auto 10px; border-radius: 14px; display: grid; place-items: center; color: var(--blue); background: #edf3ff; font-size: 1.35rem; }
+    #resultsArea { display: none; }
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-bottom: 15px; }
+    .metric { border: 1px solid var(--line); border-radius: 14px; padding: 18px; background: white; }
+    .metric-label { display: block; color: var(--muted); font-size: .82rem; margin-bottom: 7px; }
+    .metric-value { display: block; font-size: clamp(1.45rem, 3vw, 2.05rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .metric-detail { display: block; margin-top: 8px; color: var(--muted); font-size: .82rem; }
+    .metric.primary { color: white; background: linear-gradient(135deg, #2457cc, #3478ed); border-color: #3478ed; }
+    .metric.primary .metric-label, .metric.primary .metric-detail { color: #dce8ff; }
+    .result-card { padding: 0; overflow: hidden; }
+    .result-top { display:flex; align-items:center; justify-content:space-between; gap: 12px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+    .result-top p { margin: 3px 0 0; color: var(--muted); font-size: .87rem; }
+    .result-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    .result-table th { background: #f7f9fc; color: #58677e; text-align: left; font-size: .77rem; padding: 12px 15px; }
+    .result-table td { padding: 13px 15px; border-bottom: 1px solid #edf1f6; font-variant-numeric: tabular-nums; font-size: .9rem; }
+    .result-table tr:last-child td { border-bottom: 0; }
+    .result-table td:first-child, .result-table th:first-child { padding-left: 22px; }
+    .num { text-align: right; white-space: nowrap; }
+    .status { display: inline-flex; align-items: center; gap: 7px; padding: 5px 9px; border-radius: 999px; white-space: nowrap; font-weight: 750; font-size: .77rem; }
+    .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .st-opt { background: #def8ed; color: #087b5b; }
+    .st-sat { background: #e7f2ff; color: #2356a7; }
+    .st-unsat { background: #fff3d7; color: #8f6200; }
+    .st-danger { background: #ffeadc; color: #a54712; }
+    .st-critical { background: #ffe3e7; color: #a52138; }
+    .st-extreme { background: #f0e7ff; color: #6436a8; }
+    .chart-card { margin-top: 15px; }
+    .chart-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:15px; }
+    .scale-labels { display:flex; justify-content:space-between; color: #8793a5; font-size: .72rem; margin-top: 5px; }
+    .bar-list { display: grid; gap: 12px; }
+    .bar-row { display:grid; grid-template-columns: 64px minmax(80px,1fr) 72px; gap: 12px; align-items:center; }
+    .bar-year { font-weight: 750; font-size: .86rem; }
+    .bar-track { height: 13px; background: #e9eef6; border-radius: 999px; overflow: hidden; position:relative; }
+    .bar-track::after { content:""; position:absolute; left:9.333%; width:6.667%; top:0; bottom:0; background:rgba(22,184,154,.22); border-left:1px solid rgba(8,123,91,.55); border-right:1px solid rgba(8,123,91,.55); }
+    .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #3167e3, #50b8e5); position:relative; z-index:1; }
+    .bar-value { text-align: right; font-variant-numeric: tabular-nums; font-size:.86rem; font-weight:750; }
+    .conclusion { margin-top: 15px; padding: 21px 22px; border-radius: 15px; background: #101a2b; color: #f4f7ff; }
+    .conclusion h3 { margin: 0 0 8px; font-size: 1rem; }
+    .conclusion p { margin: 0; color: #d1dced; }
+    .conclusion strong { color: white; }
+    .method-table-wrap { overflow-x:auto; }
+    .method-table { width:100%; border-collapse:collapse; min-width:650px; }
+    .method-table th, .method-table td { text-align:left; padding:10px 12px; border-bottom:1px solid #edf1f6; font-size:.87rem; }
+    .method-table th { color:#5c6a80; background:#f7f9fc; font-size:.78rem; }
+    .method-table tr:last-child td { border-bottom:0; }
+    .method-note { margin:13px 0 0; color:var(--muted); font-size:.86rem; }
+    .source-link { color: var(--blue); font-weight: 750; text-decoration: none; }
+    .source-link:hover { text-decoration: underline; }
+    details { border-top:1px solid var(--line); margin-top:14px; padding-top:13px; }
+    summary { cursor:pointer; font-weight:750; font-size:.9rem; color:#29456e; }
+    details p { margin:8px 0 0; font-size:.87rem; color:var(--muted); }
+    footer { padding: 20px 0 34px; color: #778399; font-size: .8rem; }
+    .footer-inner { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; border-top:1px solid #dfe6f0; padding-top:17px; }
+    .toast { position:fixed; bottom:20px; right:20px; z-index:10; background:#14233c; color:white; padding:12px 16px; border-radius:11px; box-shadow:var(--shadow); display:none; max-width:min(420px, calc(100% - 40px)); font-size:.9rem; }
+    .toast.show { display:block; animation:fadein .2s ease; }
+    @keyframes fadein { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+    @media (max-width: 800px) {
+      .formula-layout { grid-template-columns:1fr; }
+      .period-grid { grid-template-columns:1fr; }
+      .input-card-top { flex-direction:column; }
+      .metrics { grid-template-columns:1fr; }
+      .metric { padding:15px 17px; }
+      .result-top { align-items:flex-start; flex-direction:column; }
+      .card { padding:17px; }
+      .input-card { padding:0; }
+      .input-card-top, .input-footer { padding:17px; }
+      .input-table th:first-child, .input-table td:first-child { padding-left:17px; }
+      .input-table th:last-child, .input-table td:last-child { padding-right:17px; }
+    }
+    @media print {
+      body { background:white; }
+      .hero { padding:20px; background:#101a2b!important; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+      main { padding:16px 0; }
+      .no-print, .actions, .remove-row, .input-footer, #errorBox, footer { display:none!important; }
+      .card, .metric { box-shadow:none; break-inside:avoid; }
+      #resultsArea { display:block!important; }
+      .input-table { min-width:0; }
+      .input-table th, .input-table td { padding:5px!important; font-size:8pt; }
+      .input-table input { border:0; padding:0; }
+      .table-scroll { overflow:visible; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> Інструмент оцінювання · Варіант 1.5</div>
+      <h1>Частка високотехнологічної продукції</h1>
+      <p>Інтерактивний розрахунок одного з індикаторів виробничої безпеки держави на основі обсягів реалізованої промислової продукції за видами діяльності КВЕД.</p>
+      <div class="hero-meta">
+        <span>Одиниця виміру: %</span>
+        <span>Методична база: наказ № 1277 від 29.10.2013</span>
+        <span>Розрахунок за кілька років</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section" aria-labelledby="formulaTitle">
+      <div class="section-heading">
+        <div><h2 id="formulaTitle">Логіка розрахунку</h2><p class="section-sub">Усі введені обсяги мають бути в однакових одиницях виміру.</p></div>
+      </div>
+      <div class="card formula-layout">
+        <div class="formula-box">
+          <div class="formula-label">Формула індикатора</div>
+          <div class="formula">
+            Частка, % =
+            <span class="fraction"><span>Обсяг реалізації за КВЕД 21 + 26 + 27.12 + 30*</span><span>Загальний обсяг реалізованої промислової продукції</span></span>
+            × 100
+          </div>
+          <p class="note">* Для КВЕД 30 не враховується виробництво залізничних локомотивів і рухомого складу (30.2).</p>
+        </div>
+        <div>
+          <div class="formula-label">Оптимальний інтервал</div>
+          <div style="font-size:2.25rem;font-weight:850;letter-spacing:-.05em;margin-top:5px;color:#087b5b">7–12%</div>
+          <p class="note">Порогові / характеристичні значення беруться з Додатка 2 до розділу V Методичних рекомендацій № 1277. Значення нижче й вище оптимального інтервалу оцінюються за відповідними межами таблиці.</p>
+          <div class="threshold-pills" aria-label="Характеристичні значення">
+            <span>1%</span><span>2%</span><span>3%</span><span>5%</span><span>7%</span><span>12%</span><span>30%</span><span>45%</span><span>60%</span><span>75%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="setupSection" aria-labelledby="setupTitle">
+      <div class="section-heading">
+        <div><h2 id="setupTitle">1. Налаштуйте період дослідження</h2><p class="section-sub">Спочатку оберіть кількість років і початковий рік — платформа створить відповідні рядки для введення статистики.</p></div>
+        <span class="step-chip">КРОК 1 ІЗ 3</span>
+      </div>
+      <div class="card">
+        <div class="period-grid">
+          <div><label class="field-label" for="startYear">Початковий рік</label><input class="field-control" id="startYear" type="number" min="1900" max="2100" step="1" value="2019" inputmode="numeric"></div>
+          <div><label class="field-label" for="yearCount">Кількість років у періоді</label><input class="field-control" id="yearCount" type="number" min="1" max="30" step="1" value="5" inputmode="numeric"></div>
+          <button class="btn btn-primary" id="setupBtn" type="button">Створити таблицю&nbsp; →</button>
+        </div>
+        <div id="periodError" class="period-error" role="alert" aria-live="polite"></div>
+        <p class="note" id="periodSummary" style="margin-top:12px">Приклад налаштування: 2019–2023, п'ять років. Роки можна змінити безпосередньо в таблиці на наступному кроці.</p>
+      </div>
+    </section>
+
+    <section class="section" id="dataSection" aria-labelledby="dataTitle" style="display:none">
+      <div class="section-heading">
+        <div><h2 id="dataTitle">2. Введіть вихідні дані</h2><p class="section-sub">Для кожного року вкажіть загальний обсяг промислової реалізації та обсяги за чотирма відповідними секторами.</p></div>
+        <span class="step-chip">КРОК 2 ІЗ 3</span>
+      </div>
+      <div class="card input-card">
+        <div class="input-card-top">
+          <div>
+            <h2 style="font-size:1.05rem">Річні показники</h2>
+            <p>Вкажіть загальний обсяг реалізації та обсяги за чотирма зазначеними секторами. Не вводьте знак % у числових полях.</p>
+          </div>
+          <div class="actions no-print">
+            <button class="btn btn-secondary" id="demoBtn" type="button">↗ Заповнити приклад</button>
+            <button class="btn btn-secondary" id="clearBtn" type="button">Очистити</button>
+          </div>
+        </div>
+        <div id="errorBox" class="error-box" role="alert" aria-live="polite"></div>
+        <div class="table-scroll">
+          <table class="input-table">
+            <thead>
+              <tr>
+                <th style="width:85px">Рік</th>
+                <th style="width:170px">Усього реалізовано промислової продукції</th>
+                <th style="width:150px">КВЕД 21<br>Фармацевтика</th>
+                <th style="width:160px">КВЕД 26<br>Комп'ютери, електроніка, оптика</th>
+                <th style="width:160px">КВЕД 27.12<br>Електророзподільна та контрольна апаратура</th>
+                <th style="width:160px">КВЕД 30*<br>Інші транспортні засоби</th>
+                <th style="width:50px" class="no-print"> </th>
+              </tr>
+            </thead>
+            <tbody id="inputRows"></tbody>
+          </table>
+        </div>
+        <div class="input-footer">
+          <div class="unit-note">Джерело первинної статистики, зазначене в Методичних рекомендаціях: Держстат України, експрес-випуск «Обсяг реалізованої промислової продукції та індекс обороту в Україні». Вводьте показники без ПДВ та акцизу в відпускних цінах підприємств.</div>
+          <div class="actions no-print">
+            <button class="btn btn-quiet" id="addRowBtn" type="button">＋ Додати рік</button>
+            <button class="btn btn-primary" id="calcBtn" type="button">Розрахувати показник&nbsp; →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="resultsSection" aria-labelledby="resultsTitle" style="display:none">
+      <div class="section-heading">
+        <div><h2 id="resultsTitle">3. Результати оцінювання</h2><p class="section-sub">Після перевірки даних платформа покаже значення за роками, середнє та автоматичний висновок.</p></div>
+        <span class="step-chip">КРОК 3 ІЗ 3</span>
+        <div class="actions no-print" id="resultActions" style="display:none">
+          <button class="btn btn-secondary" id="csvBtn" type="button">↓ Експорт CSV</button>
+          <button class="btn btn-secondary" id="printBtn" type="button">Друк / PDF</button>
+        </div>
+      </div>
+      <div id="emptyState" class="card results-empty">
+        <div class="empty-icon">⌁</div>
+        <strong style="display:block;color:#31425d;margin-bottom:4px">Результати ще не розраховані</strong>
+        <span>Заповніть дані хоча б за один рік і натисніть «Розрахувати показник».</span>
+      </div>
+      <div id="resultsArea">
+        <div class="metrics" id="metrics"></div>
+        <div class="card result-card">
+          <div class="result-top"><div><h2 style="font-size:1.05rem">Підсумкова таблиця</h2><p>Річні значення індикатора та відповідний рівень економічної безпеки.</p></div></div>
+          <div class="table-scroll">
+            <table class="result-table">
+              <thead><tr><th>Рік</th><th class="num">Загальний обсяг</th><th class="num">Високотехнологічна продукція</th><th class="num">Частка, %</th><th>Рівень оцінки</th></tr></thead>
+              <tbody id="resultRows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card chart-card">
+          <div class="chart-head"><div><h2 style="font-size:1.05rem">Динаміка за роками</h2><p class="section-sub">Виділена ділянка шкали позначає оптимальний інтервал 7–12%.</p></div><span class="status st-opt">Оптимум: 7–12%</span></div>
+          <div id="barList" class="bar-list"></div>
+          <div class="scale-labels"><span>0%</span><span>15%</span><span>30%</span><span>45%</span><span>60%</span><span>75%</span></div>
+        </div>
+        <div class="conclusion" aria-live="polite"><h3>Автоматичний аналітичний висновок</h3><p id="conclusionText"></p></div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="thresholdsTitle">
+      <div class="section-heading"><div><h2 id="thresholdsTitle">3. Порогові та характеристичні значення</h2><p class="section-sub">Шкала оцінювання відтворює межі, зазначені в Додатку 2 Методичних рекомендацій.</p></div></div>
+      <div class="card">
+        <div class="method-table-wrap">
+          <table class="method-table">
+            <thead><tr><th>Значення індикатора</th><th>Інтерпретація</th><th>Пояснення</th></tr></thead>
+            <tbody>
+              <tr><td>Менше 1%</td><td><span class="status st-extreme">Абсолютно небезпечний</span></td><td>Нижче нижньої критичної межі</td></tr>
+              <tr><td>Від 1% до &lt; 2%</td><td><span class="status st-critical">Критичний</span></td><td>Критична зона нижче оптимуму</td></tr>
+              <tr><td>Від 2% до &lt; 3%</td><td><span class="status st-danger">Небезпечний</span></td><td>Небезпечна зона нижче оптимуму</td></tr>
+              <tr><td>Від 3% до &lt; 5%</td><td><span class="status st-unsat">Незадовільний</span></td><td>Незадовільна зона нижче оптимуму</td></tr>
+              <tr><td>Від 5% до &lt; 7%</td><td><span class="status st-sat">Задовільний</span></td><td>Задовільна зона нижче оптимуму</td></tr>
+              <tr><td>Від 7% до 12% включно</td><td><span class="status st-opt">Оптимальний</span></td><td>Оптимальний інтервал індикатора</td></tr>
+              <tr><td>Понад 12% до 30% включно</td><td><span class="status st-sat">Задовільний</span></td><td>Задовільна зона вище оптимуму</td></tr>
+              <tr><td>Понад 30% до 45% включно</td><td><span class="status st-unsat">Незадовільний</span></td><td>Незадовільна зона вище оптимуму</td></tr>
+              <tr><td>Понад 45% до 60% включно</td><td><span class="status st-danger">Небезпечний</span></td><td>Небезпечна зона вище оптимуму</td></tr>
+              <tr><td>Понад 60% до 75% включно</td><td><span class="status st-critical">Критичний</span></td><td>Критична зона вище оптимуму</td></tr>
+              <tr><td>Понад 75%</td><td><span class="status st-critical">Критичний — поза межею</span></td><td>Значення вище верхньої критичної межі таблиці</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="method-note">За таблицею характеристичних значень оптимум розташований між лівим оптимальним значенням 7% і правим оптимальним значенням 12%. Для значень за межами інтервалу застосовується відповідна зона з боку, нижче або вище оптимуму.</p>
+        <details>
+          <summary>Методична примітка про середнє значення</summary>
+          <p>Сайт обчислює середнє арифметичне річних значень індикатора за всі роки, які успішно пройшли перевірку. Це допоміжний підсумок за обраний користувачем період; він не замінює окрему оцінку кожного року.</p>
+        </details>
+        <details>
+          <summary>Джерело формули та порогових значень</summary>
+          <p>Міністерство економічного розвитку і торгівлі України. (2013). <em>Про затвердження Методичних рекомендацій щодо розрахунку рівня економічної безпеки України</em>: Наказ від 29 жовтня 2013 р. № 1277. <a class="source-link" href="https://zakon.rada.gov.ua/rada/show/v1277731-13#Text" target="_blank" rel="noopener noreferrer">Офіційний текст на сайті Верховної Ради України ↗</a></p>
+          <p>У навчальному завданні використовується надана викладачем методична база наказу № 1277; сам сайт не стверджує, що цей документ чинний на дату використання.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner"><span>Навчальний проєкт · Індикатор виробничої безпеки 1.5</span><span>Розрахунки виконуються у браузері; введені дані не надсилаються на сервер.</span></div>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+      const rowsBody = document.getElementById('inputRows');
+      const errorBox = document.getElementById('errorBox');
+      const periodError = document.getElementById('periodError');
+      const setupSection = document.getElementById('setupSection');
+      const dataSection = document.getElementById('dataSection');
+      const resultsSection = document.getElementById('resultsSection');
+      const startYearInput = document.getElementById('startYear');
+      const yearCountInput = document.getElementById('yearCount');
+      const setupBtn = document.getElementById('setupBtn');
+      const periodSummary = document.getElementById('periodSummary');
+      const emptyState = document.getElementById('emptyState');
+      const resultsArea = document.getElementById('resultsArea');
+      const resultActions = document.getElementById('resultActions');
+      const toast = document.getElementById('toast');
+      let periodCreated = false;
+      let lastResults = [];
+      let toastTimer;
+      const SECTORS = [
+        { key: 'pharma', title: 'КВЕД 21' },
+        { key: 'computers', title: 'КВЕД 26' },
+        { key: 'electrical', title: 'КВЕД 27.12' },
+        { key: 'transport', title: 'КВЕД 30*' }
+      ];
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+
+      function createCellInput(label, name, value = '', type = 'text') {
+        const input = document.createElement('input');
+        input.type = type;
+        input.name = name;
+        input.value = value;
+        input.setAttribute('aria-label', label);
+        if (name === 'year') {
+          input.className = 'year-input';
+          input.inputMode = 'numeric';
+          input.placeholder = 'Рік';
+          input.maxLength = 4;
+        } else {
+          input.inputMode = 'decimal';
+          input.placeholder = '0';
+          input.autocomplete = 'off';
+          input.spellcheck = false;
+        }
+        input.addEventListener('input', () => input.classList.remove('invalid'));
+        return input;
+      }
+
+      function addRow(data = {}) {
+        if (data.year === undefined) {
+          const years = [...rowsBody.querySelectorAll('input[name="year"]')].map(input => Number(input.value)).filter(year => Number.isInteger(year) && year >= 1900 && year <= 2100);
+          if (years.length) data = { ...data, year: Math.max(...years) + 1 };
+        }
+        const tr = document.createElement('tr');
+        tr.className = 'input-row';
+        const items = [
+          ['Рік', 'year', data.year ?? ''],
+          ['Загальний обсяг', 'total', data.total ?? ''],
+          ['КВЕД 21 — фармацевтика', 'pharma', data.pharma ?? ''],
+          ['КВЕД 26 — комп’ютери, електроніка й оптика', 'computers', data.computers ?? ''],
+          ['КВЕД 27.12 — електророзподільна апаратура', 'electrical', data.electrical ?? ''],
+          ['КВЕД 30 — інші транспортні засоби без 30.2', 'transport', data.transport ?? '']
+        ];
+        items.forEach(([label, name, value]) => {
+          const td = document.createElement('td');
+          td.appendChild(createCellInput(label, name, value));
+          tr.appendChild(td);
+        });
+        const actionTd = document.createElement('td');
+        actionTd.className = 'no-print';
+        const remove = document.createElement('button');
+        remove.type = 'button'; remove.className = 'remove-row'; remove.title = 'Видалити цей рік'; remove.setAttribute('aria-label', 'Видалити цей рік'); remove.textContent = '×';
+        remove.addEventListener('click', () => {
+          if (rowsBody.querySelectorAll('tr').length <= 1) {
+            tr.querySelectorAll('input').forEach(i => { i.value = ''; i.classList.remove('invalid'); });
+          } else tr.remove();
+          clearResults();
+        });
+        actionTd.appendChild(remove); tr.appendChild(actionTd); rowsBody.appendChild(tr);
+      }
+
+      function parseNumber(raw) {
+        const clean = String(raw).trim().replace(/\s+/g, '').replace(',', '.');
+        if (clean === '') return null;
+        const num = Number(clean);
+        return Number.isFinite(num) ? num : NaN;
+      }
+
+      function formatNumber(value, digits = 2) {
+        return new Intl.NumberFormat('uk-UA', { minimumFractionDigits: 0, maximumFractionDigits: digits }).format(value);
+      }
+
+      function levelFor(value) {
+        if (value < 1) return { label: 'Абсолютно небезпечний', cls: 'st-extreme', key: 'extreme' };
+        if (value < 2) return { label: 'Критичний', cls: 'st-critical', key: 'critical' };
+        if (value < 3) return { label: 'Небезпечний', cls: 'st-danger', key: 'danger' };
+        if (value < 5) return { label: 'Незадовільний', cls: 'st-unsat', key: 'unsat' };
+        if (value < 7) return { label: 'Задовільний', cls: 'st-sat', key: 'sat' };
+        if (value <= 12) return { label: 'Оптимальний', cls: 'st-opt', key: 'opt' };
+        if (value <= 30) return { label: 'Задовільний', cls: 'st-sat', key: 'sat' };
+        if (value <= 45) return { label: 'Незадовільний', cls: 'st-unsat', key: 'unsat' };
+        if (value <= 60) return { label: 'Небезпечний', cls: 'st-danger', key: 'danger' };
+        return { label: 'Критичний', cls: 'st-critical', key: 'critical' };
+      }
+
+      function activeData(row, index) {
+        const fields = Object.fromEntries([...row.querySelectorAll('input')].map(input => [input.name, input]));
+        const vals = Object.fromEntries(Object.entries(fields).map(([k, input]) => [k, input.value.trim()]));
+        const active = Object.values(vals).some(v => v !== '');
+        return { fields, vals, active, index };
+      }
+
+      function clearErrors() {
+        errorBox.classList.remove('show'); errorBox.innerHTML = '';
+        rowsBody.querySelectorAll('input').forEach(input => input.classList.remove('invalid'));
+      }
+
+      function validateRows() {
+        clearErrors();
+        const errors = [];
+        const usedYears = new Set();
+        const cleanRows = [];
+        const allRows = [...rowsBody.querySelectorAll('.input-row')].map(activeData);
+        allRows.forEach(row => {
+          if (!row.active) return;
+          const { fields, vals, index } = row;
+          const rowNum = index + 1;
+          let rowHasError = false;
+          const mark = (name, message) => {
+            fields[name].classList.add('invalid'); errors.push(`Рядок ${rowNum}: ${message}`); rowHasError = true;
+          };
+          if (!vals.year) mark('year', 'вкажіть рік.');
+          else {
+            const yr = Number(vals.year);
+            if (!/^\d{4}$/.test(vals.year) || !Number.isInteger(yr) || yr < 1900 || yr > 2100) mark('year', 'рік має бути цілим числом від 1900 до 2100.');
+            else if (usedYears.has(yr)) mark('year', `рік ${yr} повторюється — кожен рік має бути унікальним.`);
+            else usedYears.add(yr);
+          }
+          const numbers = {};
+          ['total', 'pharma', 'computers', 'electrical', 'transport'].forEach(name => {
+            const label = ({total:'загальний обсяг',pharma:'обсяг КВЕД 21',computers:'обсяг КВЕД 26',electrical:'обсяг КВЕД 27.12',transport:'обсяг КВЕД 30'})[name];
+            if (vals[name] === '') { mark(name, `заповніть поле «${label}».`); return; }
+            const n = parseNumber(vals[name]);
+            if (!Number.isFinite(n)) { mark(name, `поле «${label}» має містити число (можна використовувати кому як десятковий роздільник).`); return; }
+            if (n < 0) { mark(name, `поле «${label}» не може бути від’ємним.`); return; }
+            numbers[name] = n;
+          });
+          if (numbers.total !== undefined && numbers.total <= 0) mark('total', 'загальний обсяг має бути більшим за 0.');
+          if (['pharma','computers','electrical','transport'].every(k => numbers[k] !== undefined) && numbers.total !== undefined) {
+            const hiTech = numbers.pharma + numbers.computers + numbers.electrical + numbers.transport;
+            if (hiTech > numbers.total + Math.max(1e-9, numbers.total * 1e-10)) {
+              ['pharma','computers','electrical','transport'].forEach(k => fields[k].classList.add('invalid'));
+              errors.push(`Рядок ${rowNum}: сума високотехнологічних секторів (${formatNumber(hiTech)}) перевищує загальний обсяг реалізації (${formatNumber(numbers.total)}). Перевірте вихідні дані.`);
+              rowHasError = true;
+            }
+          }
+          if (!rowHasError) {
+            const highTech = numbers.pharma + numbers.computers + numbers.electrical + numbers.transport;
+            cleanRows.push({ year: Number(vals.year), total: numbers.total, pharma: numbers.pharma, computers: numbers.computers, electrical: numbers.electrical, transport: numbers.transport, highTech, share: highTech / numbers.total * 100 });
+          }
+        });
+        if (allRows.every(row => !row.active)) errors.unshift('Введіть дані хоча б за один рік.');
+        else if (cleanRows.length === 0 && errors.length === 0) errors.push('Не вдалося сформувати жодного повного рядка з даними.');
+        if (errors.length) {
+          errorBox.innerHTML = '<strong>Перевірте введені дані:</strong><ul>' + errors.map(e => `<li>${escapeHtml(e)}</li>`).join('') + '</ul>';
+          errorBox.classList.add('show');
+          return null;
+        }
+        return cleanRows.sort((a,b) => a.year - b.year);
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+      }
+
+      function clearResults() {
+        lastResults = [];
+        emptyState.style.display = 'block'; resultsArea.style.display = 'none'; resultActions.style.display = 'none';
+        clearErrors();
+      }
+
+      function statusMarkup(level) {
+        return `<span class="status ${level.cls}">${level.label}</span>`;
+      }
+
+      function trendDescription(first, last) {
+        const diff = last.share - first.share;
+        if (Math.abs(diff) < 0.005) return `практично не змінилася (різниця ${formatNumber(diff)} в. п.)`;
+        return diff > 0 ? `зросла на ${formatNumber(diff)} в. п.` : `знизилася на ${formatNumber(Math.abs(diff))} в. п.`;
+      }
+
+      function renderResults(rows) {
+        lastResults = rows;
+        const avg = rows.reduce((sum, r) => sum + r.share, 0) / rows.length;
+        const avgLevel = levelFor(avg);
+        const latest = rows[rows.length - 1];
+        const earliest = rows[0];
+        const latestLevel = levelFor(latest.share);
+        const period = rows.length === 1 ? String(rows[0].year) : `${rows[0].year}–${rows[rows.length-1].year}`;
+        document.getElementById('metrics').innerHTML = `
+          <div class="metric primary"><span class="metric-label">Середня частка за період</span><span class="metric-value">${formatNumber(avg)}%</span><span class="metric-detail">${period} · ${rows.length} ${rows.length === 1 ? 'рік' : rows.length < 5 ? 'роки' : 'років'}</span></div>
+          <div class="metric"><span class="metric-label">Оцінка середнього значення</span><span class="metric-value" style="font-size:1.35rem;letter-spacing:-.02em">${avgLevel.label}</span><span class="metric-detail">За характеристичними межами наказу № 1277</span></div>
+          <div class="metric"><span class="metric-label">Останній рік у періоді (${latest.year})</span><span class="metric-value">${formatNumber(latest.share)}%</span><span class="metric-detail">${latestLevel.label}</span></div>`;
+        document.getElementById('resultRows').innerHTML = rows.map(r => {
+          const lvl = levelFor(r.share);
+          return `<tr><td><strong>${r.year}</strong></td><td class="num">${formatNumber(r.total)}</td><td class="num">${formatNumber(r.highTech)}</td><td class="num"><strong>${formatNumber(r.share, 3)}%</strong></td><td>${statusMarkup(lvl)}</td></tr>`;
+        }).join('') + `<tr style="background:#f7f9fc"><td><strong>Середнє</strong></td><td class="num">—</td><td class="num">—</td><td class="num"><strong>${formatNumber(avg, 3)}%</strong></td><td>${statusMarkup(avgLevel)}</td></tr>`;
+        document.getElementById('barList').innerHTML = rows.map(r => {
+          const width = Math.max(0, Math.min(100, r.share / 75 * 100));
+          return `<div class="bar-row"><span class="bar-year">${r.year}</span><div class="bar-track" title="${formatNumber(r.share)}% від загального обсягу"><div class="bar-fill" style="width:${width}%"></div></div><span class="bar-value">${formatNumber(r.share)}%</span></div>`;
+        }).join('');
+        const first = earliest;
+        const trend = trendDescription(first, latest);
+        const overNote = avg > 75 ? ' Середнє значення перевищує верхню критичну межу 75%.' : avg < 1 ? ' Середнє значення нижче нижньої критичної межі 1%.' : '';
+        const optimalNote = avg >= 7 && avg <= 12 ? ' Середнє значення перебуває в оптимальному інтервалі 7–12%.' : ' Середнє значення не потрапляє в оптимальний інтервал 7–12%.';
+        document.getElementById('conclusionText').innerHTML = `За період <strong>${period}</strong> середня частка високотехнологічної продукції становить <strong>${formatNumber(avg, 3)}%</strong>. За характеристичною шкалою це відповідає рівню <strong>${avgLevel.label.toLowerCase()}</strong>. Від першого до останнього року частка високотехнологічної продукції ${trend} (від ${formatNumber(first.share, 3)}% у ${first.year} році до ${formatNumber(latest.share, 3)}% у ${latest.year} році).${optimalNote}${overNote} Висновок базується на введених користувачем даних і не є самостійною офіційною статистичною оцінкою.`;
+        emptyState.style.display = 'none'; resultsArea.style.display = 'block'; resultActions.style.display = 'flex';
+      }
+
+      function calculate() {
+        const data = validateRows();
+        if (!data || !data.length) return;
+        renderResults(data);
+        document.getElementById('resultsSection').scrollIntoView({behavior:'smooth', block:'start'});
+        showToast('Розрахунок виконано. Перевірте таблицю та аналітичний висновок нижче.');
+      }
+
+      function resetInputs() {
+        rowsBody.querySelectorAll('.input-row').forEach(row => {
+          row.querySelectorAll('input').forEach(input => {
+            if (input.name !== 'year') input.value = '';
+            input.classList.remove('invalid');
+          });
+        });
+        clearResults();
+        showToast('Обсяги очищено; вибрані роки залишилися у таблиці.');
+      }
+
+      function showInputSteps() {
+        dataSection.style.display = 'block';
+        resultsSection.style.display = 'block';
+      }
+
+      function createPeriod() {
+        periodError.classList.remove('show');
+        periodError.textContent = '';
+        const start = Number(startYearInput.value);
+        const count = Number(yearCountInput.value);
+        if (!Number.isInteger(start) || start < 1900 || start > 2100) {
+          periodError.textContent = 'Початковий рік має бути цілим числом від 1900 до 2100.';
+          periodError.classList.add('show');
+          startYearInput.focus();
+          return;
+        }
+        if (!Number.isInteger(count) || count < 1 || count > 30) {
+          periodError.textContent = 'Кількість років має бути цілим числом від 1 до 30.';
+          periodError.classList.add('show');
+          yearCountInput.focus();
+          return;
+        }
+        if (start + count - 1 > 2100) {
+          periodError.textContent = 'Обраний період виходить за межі 2100 року. Змініть початковий рік або кількість років.';
+          periodError.classList.add('show');
+          yearCountInput.focus();
+          return;
+        }
+        if (periodCreated && rowsBody.querySelectorAll('.input-row').length && !window.confirm('Створення нового періоду замінить поточні рядки та введені дані. Продовжити?')) return;
+        rowsBody.innerHTML = '';
+        for (let i = 0; i < count; i++) addRow({ year: start + i });
+        periodCreated = true;
+        setupBtn.innerHTML = 'Оновити період&nbsp; →';
+        periodSummary.textContent = `Сформована таблиця: ${start}–${start + count - 1} рр. (${count} ${count === 1 ? 'рік' : count < 5 ? 'роки' : 'років'}). Роки можна відредагувати в таблиці нижче.`;
+        showInputSteps();
+        clearResults();
+        dataSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast('Таблицю створено. Заповніть усі поля для кожного року й виконайте розрахунок.');
+      }
+
+      function loadDemo() {
+        const demo = [
+          {year:2019,total:100000,pharma:850,computers:1250,electrical:1700,transport:2300},
+          {year:2020,total:105000,pharma:900,computers:1400,electrical:1800,transport:2500},
+          {year:2021,total:120000,pharma:1050,computers:1650,electrical:2050,transport:3000},
+          {year:2022,total:112000,pharma:980,computers:1550,electrical:1900,transport:2850},
+          {year:2023,total:128000,pharma:1180,computers:1900,electrical:2200,transport:3450}
+        ];
+        rowsBody.innerHTML = '';
+        demo.forEach(addRow);
+        periodCreated = true;
+        startYearInput.value = '2019'; yearCountInput.value = '5';
+        setupBtn.innerHTML = 'Оновити період&nbsp; →';
+        periodSummary.textContent = 'Завантажено умовний приклад на 2019–2023 роки. Дані демонстраційні, а не офіційна статистика.';
+        periodError.classList.remove('show');
+        showInputSteps();
+        clearResults();
+        dataSection.scrollIntoView({behavior:'smooth', block:'start'});
+        showToast('Завантажено умовні демонстраційні дані — замініть їх офіційними значеннями перед використанням.');
+      }
+
+      function exportCsv() {
+        if (!lastResults.length) return;
+        const lines = [['Рік','Загальний обсяг','КВЕД 21','КВЕД 26','КВЕД 27.12','КВЕД 30 без 30.2','Високотехнологічна продукція разом','Частка, %','Рівень']];
+        lastResults.forEach(r => lines.push([r.year,r.total,r.pharma,r.computers,r.electrical,r.transport,r.highTech,r.share.toFixed(4),levelFor(r.share).label]));
+        const avg = lastResults.reduce((s,r)=>s+r.share,0)/lastResults.length;
+        lines.push(['Середнє','','','','','','',avg.toFixed(4),levelFor(avg).label]);
+        const csv = '\ufeff' + lines.map(row => row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(';')).join('\r\n');
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'otsinka-vysokotekhnolohichnoi-produktsii.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        showToast('Таблицю збережено у форматі CSV.');
+      }
+
+      setupBtn.addEventListener('click', createPeriod);
+      document.getElementById('addRowBtn').addEventListener('click', () => { addRow(); clearResults(); });
+      document.getElementById('calcBtn').addEventListener('click', calculate);
+      document.getElementById('clearBtn').addEventListener('click', resetInputs);
+      document.getElementById('demoBtn').addEventListener('click', loadDemo);
+      document.getElementById('csvBtn').addEventListener('click', exportCsv);
+      document.getElementById('printBtn').addEventListener('click', () => window.print());
+      rowsBody.addEventListener('input', event => { if (event.target.matches('input')) clearResults(); });
+    })();
+  </script>
+</body>
+</html>
